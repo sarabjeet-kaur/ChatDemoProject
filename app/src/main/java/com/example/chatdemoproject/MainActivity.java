@@ -12,14 +12,12 @@ import android.util.Log;
 import android.widget.FrameLayout;
 
 import com.example.chatdemoproject.fragment.RegisterFragment;
-import com.example.chatdemoproject.listeners.RegisterCallbacks;
 import com.example.chatdemoproject.service.MyFirebaseInstanceIDService;
 
 
-public class MainActivity extends AppCompatActivity implements RegisterCallbacks {
+public class MainActivity extends AppCompatActivity {
     private static final String TAG ="MainActivity";
     private FrameLayout conatiner;
-    public static RegisterCallbacks listener = null;
     private MyBroadCastReceiver receiver = null;
     private IntentFilter filter = null;
 
@@ -33,13 +31,13 @@ public class MainActivity extends AppCompatActivity implements RegisterCallbacks
     }
 
     private void initView(){
-        listener = this;
         conatiner=(FrameLayout)findViewById(R.id.container);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         RegisterFragment fragment=new RegisterFragment();
         fragmentTransaction.add(R.id.container,fragment);
+        fragmentTransaction.addToBackStack(RegisterFragment.class.getSimpleName());
         fragmentTransaction.commit();
 
 
@@ -48,17 +46,6 @@ public class MainActivity extends AppCompatActivity implements RegisterCallbacks
 
 
     }
-
-    @Override
-    public void regiserFcm() {
-
-    }
-
-    @Override
-    public void unRegisterFcm() {
-
-    }
-
 
     @Override
     protected void onPause() {
@@ -95,5 +82,11 @@ public class MainActivity extends AppCompatActivity implements RegisterCallbacks
             }*/
         }
 
+    }
+
+
+    public String getTopFragment(){
+
+        return null;
     }
 }

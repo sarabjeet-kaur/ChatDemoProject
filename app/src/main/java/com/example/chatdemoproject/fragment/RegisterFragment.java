@@ -67,12 +67,13 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
                 register();
                 break;
             case R.id.btn_chat:
-                if (MyFirebaseInstanceIDService.refreshedToken!=null){
+                if (MyFirebaseInstanceIDService.refreshedToken!=null || token!=null){
                     FragmentManager fragmentManager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
                     ChatFragment fragment = new ChatFragment();
                     fragmentTransaction.replace(R.id.container, fragment);
+                    fragmentTransaction.addToBackStack(ChatFragment.class.getSimpleName());
                     fragmentTransaction.commit();
                 }
                 else{
@@ -91,6 +92,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
                 pd.show();*/
 
             token = FirebaseInstanceId.getInstance().getToken();
+            Log.e("token on register",token+"");
             try{
                 if (token != null) {
                     if (pd != null && pd.isShowing())

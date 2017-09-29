@@ -1,10 +1,15 @@
 package com.example.chatdemoproject.fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +19,7 @@ import android.widget.ImageView;
 import com.example.chatdemoproject.R;
 import com.example.chatdemoproject.adapters.SendMessageListAdapter;
 import com.example.chatdemoproject.bean.SendMessageModel;
+import com.example.chatdemoproject.service.MyFirebaseMessagingService;
 
 import java.util.ArrayList;
 
@@ -24,9 +30,11 @@ import java.util.ArrayList;
 public class ChatFragment extends Fragment implements View.OnClickListener {
     private EditText message;
     private ImageView send_message, attachment;
-    private SendMessageListAdapter adapter;
-    public ArrayList<SendMessageModel> sendlist;
+    private static SendMessageListAdapter adapter;
+    public static ArrayList<SendMessageModel> sendlist;
     private RecyclerView recyclerView;
+    MessageBroadCast receiver=null;
+    private IntentFilter filter = null;
 
 
     public ChatFragment() {
@@ -56,6 +64,9 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
 
         adapter = new SendMessageListAdapter(sendlist, getActivity());
         recyclerView.setAdapter(adapter);
+
+        receiver=new MessageBroadCast();
+        filter = new IntentFilter(MyFirebaseMessagingService.MESSAGE_INTENT);
     }
 
     @Override
@@ -72,9 +83,31 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
 
     private void sendMessage() {
         String text = message.getText().toString();
-        sendlist.add(new SendMessageModel(text, ""));
+        sendlist.add(new SendMessageModel(text,null));
         adapter.notifyDataSetChanged();
         message.setText("");
 
+    }
+
+    public static class MessageBroadCast extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+
+            if (intent.getAction().equalsIgnoreCase(MyFirebaseMessagingService.MESSAGE_INTENT)) {
+                Log.e("", "broad cast for token received");
+
+                if (intent.hasExtra(MyFirebaseMessagingService.MESSAGE)) {
+                    SendMessageModel model = (SendMessageModel) intent.getSerializableExtra(MyFirebaseMessagingService.MESSAGE);
+                    if (model != null){
+                        sendlist.add(model);
+                        adapter.notifyDataSetChanged();
+                    }
+                    Log.e("", "message is "+intent.getStringExtra(MyFirebaseMessagingService.MESSAGE));
+
+                }
+            }
+
+        }
     }
 }

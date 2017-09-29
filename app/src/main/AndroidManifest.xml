@@ -36,6 +36,11 @@
                 <action android:name="com.example.chatdemoproject.token_received" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".fragment.ChatFragment$MessageBroadCast">
+            <intent-filter>
+                <action android:name="com.example.chatdemoproject.message_received" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
