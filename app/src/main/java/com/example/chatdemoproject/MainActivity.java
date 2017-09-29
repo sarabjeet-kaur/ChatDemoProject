@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
         RegisterFragment fragment=new RegisterFragment();
         fragmentTransaction.add(R.id.container,fragment);
-        fragmentTransaction.addToBackStack(RegisterFragment.class.getSimpleName());
+        //fragmentTransaction.addToBackStack(RegisterFragment.class.getSimpleName());
         fragmentTransaction.commit();
 
 

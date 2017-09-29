@@ -32,9 +32,14 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
     private ImageView send_message, attachment;
     private static SendMessageListAdapter adapter;
     public static ArrayList<SendMessageModel> sendlist;
-    private RecyclerView recyclerView;
+    private static RecyclerView recyclerView;
     MessageBroadCast receiver=null;
     private IntentFilter filter = null;
+    public static String TYPE_SEND = "send";
+    public static String TYPE_RECEIVED = "received";
+
+    public static boolean isChatOpen = false;
+
 
 
     public ChatFragment() {
@@ -61,12 +66,15 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
         sendlist = new ArrayList<>();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(layoutManager);
-
+        layoutManager.setStackFromEnd(true);
         adapter = new SendMessageListAdapter(sendlist, getActivity());
         recyclerView.setAdapter(adapter);
 
+
         receiver=new MessageBroadCast();
         filter = new IntentFilter(MyFirebaseMessagingService.MESSAGE_INTENT);
+
+        isChatOpen = true;
     }
 
     @Override
@@ -83,8 +91,13 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
 
     private void sendMessage() {
         String text = message.getText().toString();
-        sendlist.add(new SendMessageModel(text,null));
+        SendMessageModel sendMessageModel=new SendMessageModel();
+        sendMessageModel.setMessageType(TYPE_SEND);
+        sendMessageModel.setTextMessage(text);
+        sendlist.add(sendMessageModel);
         adapter.notifyDataSetChanged();
+
+        recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount()-1);
         message.setText("");
 
     }
@@ -98,12 +111,17 @@ public class ChatFragment extends Fragment implements View.OnClickListener {
                 Log.e("", "broad cast for token received");
 
                 if (intent.hasExtra(MyFirebaseMessagingService.MESSAGE)) {
-                    SendMessageModel model = (SendMessageModel) intent.getSerializableExtra(MyFirebaseMessagingService.MESSAGE);
-                    if (model != null){
-                        sendlist.add(model);
-                        adapter.notifyDataSetChanged();
-                    }
-                    Log.e("", "message is "+intent.getStringExtra(MyFirebaseMessagingService.MESSAGE));
+
+                    String recivedMessage=intent.getStringExtra(MyFirebaseMessagingService.MESSAGE);
+
+                    SendMessageModel sendMessageModel=new SendMessageModel();
+                    sendMessageModel.setMessageType(TYPE_RECEIVED);
+                    sendMessageModel.setTextMessage(recivedMessage);
+                    sendlist.add(sendMessageModel);
+                    adapter.notifyDataSetChanged();
+                    recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount()-1);
+
+                    //Log.e("", "message is "+intent.getStringExtra(MyFirebaseMessagingService.MESSAGE));
 
                 }
             }

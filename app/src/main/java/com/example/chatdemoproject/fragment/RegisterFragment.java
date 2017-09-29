@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.chatdemoproject.ChatListener;
 import com.example.chatdemoproject.R;
 import com.example.chatdemoproject.service.MyFirebaseInstanceIDService;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -23,12 +24,14 @@ import java.io.IOException;
  * Created by sarabjjeet on 9/29/17.
  */
 
-public class RegisterFragment extends Fragment implements View.OnClickListener {
+public class RegisterFragment extends Fragment implements View.OnClickListener, ChatListener{
     private Button btn_register, btn_chat;
     private ProgressDialog pd = null;
 
     boolean isRegister = false;
     String token;
+
+    public static ChatListener chatListener;
 
     public RegisterFragment() {
     }
@@ -57,6 +60,8 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
         pd.setCancelable(false);
         pd.setMessage(getString(R.string.please_wait));
 
+        chatListener = this;
+        ChatFragment.isChatOpen = false;
 
     }
 
@@ -68,13 +73,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.btn_chat:
                 if (MyFirebaseInstanceIDService.refreshedToken!=null || token!=null){
-                    FragmentManager fragmentManager = getFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-                    ChatFragment fragment = new ChatFragment();
-                    fragmentTransaction.replace(R.id.container, fragment);
-                    fragmentTransaction.addToBackStack(ChatFragment.class.getSimpleName());
-                    fragmentTransaction.commit();
+                    openChatFragment();
                 }
                 else{
                     Toast.makeText(getActivity(), "Please try again,not successfully register...", Toast.LENGTH_SHORT).show();
@@ -142,5 +141,20 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     }
 
 
+    @Override
+    public void openChat() {
+        openChatFragment();
+    }
 
+
+    private void openChatFragment(){
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        ChatFragment fragment = new ChatFragment();
+        fragmentTransaction.replace(R.id.container, fragment);
+        fragmentTransaction.addToBackStack(ChatFragment.class.getSimpleName());
+        fragmentTransaction.commit();
+    }
 }
+
