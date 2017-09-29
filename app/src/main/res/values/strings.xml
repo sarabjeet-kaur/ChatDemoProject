@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">ChatDemoProject</string>
+    <string name="please_wait">Please Wait</string>
+    <string name="type_a_message">Type a message</string>
+</resources>
